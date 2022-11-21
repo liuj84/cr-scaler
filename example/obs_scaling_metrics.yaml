@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+  name: scaling-metrics
+data:
+  node: '{"cpu": {"averageValue": "44.221687600"}, "memory": {"averageValue":
+             "111.8360519409179687500"}}'
+  pravega.controller: '{"cpu": {"averageValue": "0"}, "memory": {"averageValue":
+  "112.86367187500"}}'
+  pravega.segmentstore: '{"cpu": {"averageValue": "44.221687600"}, "memory": {"averageValue":
+  "111.8360519409179687500"}, "seg_num": {"totalValue": 4}}'
+  

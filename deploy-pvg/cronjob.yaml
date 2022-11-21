@@ -1,0 +1,33 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cr-scaler-cronjob
+spec:
+  concurrencyPolicy: Forbid
+  schedule: '*/1 * * * *'
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      name: cr-scaler-job
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccount: cr-scaler
+          serviceAccountName: cr-scaler
+          containers:
+          - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            image: devops-repo.isus.emc.com:8116/nautilus/obs-scaler:0.2-dry
+            imagePullPolicy: Always
+            name: cr-scaler-job
+

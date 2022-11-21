@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scaling-policy
+data:
+  node: '{"metrics": [
+    {"name": "cpu", "targetTotalValue":"70"},
+    {"name": "memory", "targetTotalValue":"70"}]}'
+  controller: '{"minScaleFactor": 1, "maxScaleFactor": 2, "metrics": [{"name": "cpu_m",
+    "targetAverageValue": "1000"}, {"name": "memory_M", "targetAverageValue": "2000"}]}'
+  # segmentstore: '{"minScaleFactor": 1, "maxScaleFactor": 2, "metrics": [{"name":
+  #   "cpu_m", "targetAverageValue": "1000"}, {"name": "memory_M", "targetAverageValue":
+  #   "3000"}, {"name": "##influx##pravega##segmentstore_storage_write_latency_percentile_90",
+  #   "targetAverageValue": "200"}, {"name": "##influx##pravega##segmentstore_segments_count",
+  #   "targetAverageValue": "200"}], "retrict": [{"name": "##rest##pravega##seg_count",
+  #   "targetAverageValue": "8"}]}'
+  segmentstore: '{"minScaleFactor": 1, "maxScaleFactor": 2, "metrics": [{"name":
+    "cpu_m", "targetAverageValue": "1000"}, {"name": "memory_M", "targetAverageValue":
+    "3000"}]}'

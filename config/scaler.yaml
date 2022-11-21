@@ -1,0 +1,126 @@
+{
+  "crs": {
+    "ecscluster": {
+      "group": 'ecs.dellemc.com',
+      "version": 'v1beta1',
+      "plural": 'ecsclusters',
+      "name": 'ecscluster'
+    },
+    "pravegacluster": {
+      "group": 'pravega.pravega.io',
+      "version": 'v1beta1',
+      "plural": 'pravegaclusters',
+      "name": 'pravegacluster'
+    },
+    "bookkeepercluster": {
+      "group": "bookkeeper.pravega.io",
+      "version": "v1alpha1",
+      "plural": "bookkeeperclusters",
+      "name": "bookkeepercluster"
+    }
+  }, 
+  "workloads": {
+    "pravega": {
+      "components": {
+        "controller": {
+          "replicas": "spec/pravega/pravega/controllerReplicas",
+          "status_checker": [
+            {
+              "path": "status/components/pvg/ready",
+              "value": "true"
+            },
+            {
+              "path": "status/phase",
+              "value": "Available"
+            }
+          ],
+          "selector": "component=pravega-controller",
+          "type": "deploy",
+          "min_replicas": 1,
+          "container_name": "pravega-controller"
+        },
+        "segmentstore": {
+          "replicas": "spec/pravega/pravega/segmentStoreReplicas",
+          "status_checker": [
+            {
+              "path": "status/components/pvg/ready",
+              "value": "true"
+            },
+            {
+              "path": "status/phase",
+              "value": "Available"
+            }
+          ],
+          "selector": "component=pravega-segmentstore",
+          "type": "sts",
+          "min_replicas": 1,
+          "container_name": "pravega-segmentstore"
+        }
+      }
+    },
+    "bookkeeper": {
+        "replicas": "spec/bookkeeper/replicas",
+        "status_checker":[
+          {
+            "path": "status/components/bk/ready",
+            "value": "true"
+          },
+          {
+            "path": "status/phase",
+            "value": "Available"
+          }
+        ],
+        "selector": "component=bookie",
+        "type": "sts",
+        "min_replicas": 1,
+        "container_name": "bookie"
+    }
+  },
+
+  "metrics-providers": {
+    "influxdbs": {
+      "pravega": {
+        "host": "ecs-cluster1-influxdb",
+        "port": "8086",
+        "username": "admin",
+        "password": "password",
+        "database": "monitoring_op",
+        "queries": {
+          "segmentstore_segments_count": {
+            "query": "select sum(last) from (select last(value) from pravega_controller_segments_count where scope!='_system' group by scope, stream)"
+          },
+          "segmentstore_storage_write_latency": {
+            "query": "select sum(last) from (select last(mean) from pravega_segmentstore_storage_write_latency_ms group by host)"
+          },
+          "segmentstore_bk_write_latency": {
+            "query": "select sum(last) from (select last(mean) from pravega_segmentstore_bookkeeper_total_write_latency_ms group by host)"
+          },
+          "segmentstore_segment_write_latency": {
+            "query": "select sum(last) from (select last(mean) from pravega_segmentstore_segment_write_latency_ms group by host)"
+          },
+          "segmentstore_storage_write_latency_percentile_90": {
+            "query": "select sum(*) from (select last(*) from pravega_segmentstore_storage_write_latency_ms_percentile where phi='0.9' group by host)"
+          },
+          "segmentstore_bk_write_latency_percentile_90": {
+            "query": "select sum(*) from (select last(*) from pravega_segmentstore_bookkeeper_total_write_latency_ms_percentile where phi='0.9' group by host)"
+          }
+        }
+      }
+      
+    },
+    "rests": {
+      "pravega": {
+        "url": "http://ecs-cluster1-pvg-pvg-ctl:10080",
+        "username": "",
+        "password": "",
+        "apis": {
+          "seg_count": {
+            "path": "/v1/scopes/dataPlaneScope/streams",
+            "method": "GET",
+            "selector": "streams[*].scalingPolicy.minSegments.sum()"
+          }
+        }
+      }
+    }
+  }
+} 

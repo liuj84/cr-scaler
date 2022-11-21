@@ -1,0 +1,46 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    product: objectscale
+    release: ecs-cluster1
+    component: ecs-scaler
+  name: ecs-cluster1-scaler-cronjob
+spec:
+  concurrencyPolicy: Forbid
+  schedule: '*/1 * * * *'
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      labels:
+        product: objectscale
+        release: ecs-cluster1
+        component: ecs-scaler
+      name: ecs-cluster1-scaler-job
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccount: objectscale-scaler
+          serviceAccountName: objectscale-scaler
+          containers:
+          - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: WORKLOAD_ID
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            image: devops-repo.isus.emc.com:8116/nautilus/obs-scaler:0.2
+            imagePullPolicy: Always
+            name: ecs-cluster1-scaler-job
+

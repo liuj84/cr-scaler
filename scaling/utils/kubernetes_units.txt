@@ -1,0 +1,23 @@
+# memory units
+
+kmemunits = 1 = [kmemunits]
+Ki = 1024 * kmemunits
+Mi = Ki^2
+Gi = Ki^3
+Ti = Ki^4
+Pi = Ki^5
+Ei = Ki^6
+
+# cpu units
+# 1core = 1000millicore = 1000m
+
+kcpuunits = 1 = [kcpuunits]
+k = 1000 * kcpuunits
+m = k/1000
+u = m/1000
+n = u/1000
+M = k^2
+G = k^3
+T = k^4
+P = k^5
+E = k^6

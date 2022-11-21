@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scaling-config
+data:
+  data: |-
+    {
+      "crs": {
+        "pravegacluster": {
+          "group": "pravega.pravega.io",
+          "version": "v1beta1",
+          "plural": "pravegaclusters",
+          "name": "pravegacluster"
+        }
+      },
+      "workloads": {
+        "controller": {
+          "replicas": "spec/pravega/controllerReplicas",
+          "status_checker": [
+            {
+              "path": "status/members/unready",
+              "value": null
+            }
+          ],
+          "selector": "component=pravega-controller",
+          "type": "deploy",
+          "min_replicas": 1,
+          "container_name": "pravega-controller"
+        },
+        "segmentstore": {
+          "replicas": "spec/pravega/segmentStoreReplicas",
+          "status_checker": [
+            {
+              "path": "status/members/unready",
+              "value": null
+            }
+          ],
+          "selector": "component=pravega-segmentstore",
+          "type": "sts",
+          "min_replicas": 1,
+          "container_name": "pravega-segmentstore"
+        }
+      },
+      "metrics-providers": {
+        "influxdbs": {
+          "pravega": {
+            "host": "pravega-influxdb",
+            "port": "8086",
+            "username": "admin",
+            "password": "password",
+            "database": "pravega",
+            "queries": {
+              "segmentstore_segments_count": {
+                "query": "select sum(last) from (select last(value) from pravega_controller_segments_count where scope!='_system' group by scope, stream)"
+              },
+              "segmentstore_storage_write_latency": {
+                "query": "select sum(last) from (select last(mean) from pravega_segmentstore_storage_write_latency_ms group by host)"
+              },
+              "segmentstore_bk_write_latency": {
+                "query": "select sum(last) from (select last(mean) from pravega_segmentstore_bookkeeper_total_write_latency_ms group by host)"
+              },
+              "segmentstore_segment_write_latency": {
+                "query": "select sum(last) from (select last(mean) from pravega_segmentstore_segment_write_latency_ms group by host)"
+              },
+              "segmentstore_storage_write_latency_percentile_90": {
+                "query": "select sum(*) from (select last(*) from pravega_segmentstore_storage_write_latency_ms_percentile where phi='0.9' group by host)"
+              },
+              "segmentstore_bk_write_latency_percentile_90": {
+                "query": "select sum(*) from (select last(*) from pravega_segmentstore_bookkeeper_total_write_latency_ms_percentile where phi='0.9' group by host)"
+              }
+            }
+          }
+        },
+        "rests": {
+          "pravega": {
+            "url": "http://pravega-pravega-controller:10080",
+            "username": "",
+            "password": "",
+            "apis": {
+              "seg_count": {
+                "path": "/v1/scopes/dataPlaneScope/streams",
+                "method": "GET",
+                "selector": "streams[*].scalingPolicy.minSegments.sum()"
+              }
+            }
+          }
+        }
+      }
+    }

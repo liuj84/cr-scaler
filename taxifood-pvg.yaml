@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: taxifood
+spec:
+  manualSelector: true
+  selector:
+    matchLabels:
+      app: taxifood
+  parallelism: 1
+  template:
+    metadata:
+      name: taxifood
+      labels:
+        app: taxifood
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: taxifood
+          image: devops-repo.isus.emc.com:8116/miy/psearch/dogfoodcq:0.10.0
+          command:  [ "/bin/bash", "-c",
+                      "bzip2 -d /home/data/so.json.bz2;java -jar dogfoodRefined-0.0.1-SNAPSHOT.jar --scopeName=testScope --streamName=testStream2 --continueTime=60000 --sleepInterval=0 --threadNum=10 --segmentCount=48 --dataSource=fileSystem:/home/data/so.json --mappingFile=/home/mapping/so.json --enableQuery=false --noPsearch=true --pravegaEndPoint=tcp://pravega-pravega-controller:9090;tail -f /dev/null"
+          ]

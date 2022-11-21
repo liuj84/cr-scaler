@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+  name: scaling-metrics
+data:
+  controller: '{"cpu": {"averageValue": "7.985667333333333333333333333"}, "cpu_m":
+    {"averageValue": "11.978501000"}, "memory": {"averageValue": "68.32351684570312500"},
+    "memory_M": {"averageValue": "366.809088"}, "workload_num": {"totalValue": 4}}'
+  indexworker: '{"cpu": {"averageValue": "1.59008462500"}, "cpu_m": {"averageValue":
+    "12.720677000"}, "memory": {"averageValue": "33.023071289062500"}, "memory_M":
+    {"averageValue": "531.873792"}, "stream_segment_num": {"totalValue": 0}}'
+  node: '{"cpu": {"averageValue": "2.851230858333333333333333334"}, "memory": {"averageValue":
+    "11.07384087951629906546293011"}, "cpu_m": {"totalValue": "1368.590812000", "totalCapacity":
+    "48000"}, "memory_M": {"totalValue": "22411.476992", "totalCapacity": "202382.147584"}}'
+  queryworker: '{}'
+  resthead: '{"cpu": {"averageValue": "1.240000"}, "cpu_m": {"averageValue": "24.800000"},
+    "memory": {"averageValue": "41.77983601888020833333333333"}, "memory_M": {"averageValue":
+    "672.91136"}}'
+  shardworker: '{"cpu": {"averageValue": "1.774914944444444444444444444"}, "cpu_m":
+    {"averageValue": "31.948469000"}, "memory": {"averageValue": "19.082107543945312500"},
+    "memory_M": {"averageValue": "1024.462848"}, "shard_num": {"totalValue": 1}}'

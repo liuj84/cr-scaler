@@ -1,0 +1,14 @@
+kubernetes==21.7.0
+pyyaml
+urllib3
+six
+certifi
+google.auth
+requests
+oauthlib
+pint
+python-dateutil
+websocket-client
+dynamic
+influxdb
+jsonpath_ng
